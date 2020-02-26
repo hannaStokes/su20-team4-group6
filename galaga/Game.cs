@@ -6,6 +6,7 @@ namespace galaga
 {
     public class Game : IGameEventProcessor<object> {
         private Window win;
+        int hey;
         private GameTimer gameTimer;
         public Game() {
         // TODO: Choose some reasonable values for the window and timer constructor. 
