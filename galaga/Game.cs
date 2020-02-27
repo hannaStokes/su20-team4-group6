@@ -1,16 +1,13 @@
 using System;
+using System.IO;
 using DIKUArcade;
 using DIKUArcade.Timers;
 using DIKUArcade.EventBus;
-<<<<<<< HEAD
 using DIKUArcade.Graphics;
 using DIKUArcade.Math;
 using DIKUArcade.Entities;
-=======
 
->>>>>>> 9944a2a9e654aa616f5cfa41de2a93b68e78d373
-namespace galaga
-{
+namespace galaga {
     public class Game : IGameEventProcessor<object> {
         private Window win;
         private GameTimer gameTimer;
@@ -33,7 +30,7 @@ namespace galaga
                 }
                 if (gameTimer.ShouldRender()) {
                     win.Clear();
-                    // Render gameplay entities here
+                    player.Entity.RenderEntity();
                     win.SwapBuffers();
                 }
  
