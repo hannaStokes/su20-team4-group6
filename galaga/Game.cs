@@ -2,9 +2,13 @@ using System;
 using DIKUArcade;
 using DIKUArcade.Timers;
 using DIKUArcade.EventBus;
+<<<<<<< HEAD
 using DIKUArcade.Graphics;
 using DIKUArcade.Math;
 using DIKUArcade.Entities;
+=======
+
+>>>>>>> 9944a2a9e654aa616f5cfa41de2a93b68e78d373
 namespace galaga
 {
     public class Game : IGameEventProcessor<object> {
@@ -14,7 +18,7 @@ namespace galaga
         public Game() {
         // TODO: Choose some reasonable values for the window and timer constructor. 
         // For the window, we recommend a 500x500 resolution (a 1:1 aspect ratio). win = new Window(... , ... , ...);
-        gameTimer = new  DIKUArcade.Timers.GameTimer(60, 60);
+        gameTimer = new  GameTimer(60, 60);
         win = new Window("Galaga" , 500 , 500);
         player = new Player(
             new DynamicShape(new Vec2F(0.45f, 0.1f), new Vec2F(0.1f, 0.1f)), 
