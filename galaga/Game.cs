@@ -76,7 +76,7 @@ namespace galaga {
                     player.Direction(new Vec2F((float)0.01, (float)0.0));
                     break;
                 case "KEY_LEFT":
-                    player.Direction(new Vec2F((float)-0.01, (float)0.0));
+                    player.Direction(new Vec2F(-((float)0.01), (float)0.0));
                     break;
             }
         }
@@ -108,5 +108,6 @@ namespace galaga {
         }
     }
 }
+
 
 
