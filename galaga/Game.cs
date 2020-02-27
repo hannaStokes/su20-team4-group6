@@ -14,6 +14,8 @@ namespace galaga {
         private GameEventBus<object> eventBus;
         private Window win;
         private GameTimer gameTimer;
+        private List<Image> enemyStrides;
+        private List<Enemy> enemies;
         private Player player;
         public Game() {
             eventBus = new GameEventBus<object>();
@@ -29,6 +31,9 @@ namespace galaga {
         player = new Player(
             new DynamicShape(new Vec2F(0.45f, 0.1f), new Vec2F(0.1f, 0.1f)), 
             new Image(Path.Combine("Assets", "Images", "Player.png")));
+        enemyStrides = ImageStride.CreateStrides(4, Path.Combine("Assets", "Images", "BlueMonster.png"));
+        enemies = new List<Enemy>();
+        AddEnemies();
         }
         public void GameLoop() {
             while(win.IsRunning()) {
@@ -42,6 +47,8 @@ namespace galaga {
                 if (gameTimer.ShouldRender()) {
                     win.Clear();
                     player.Entity.RenderEntity();
+                    foreach (Enemy element in enemies) {
+                        element.RenderEntity();}
                     win.SwapBuffers();
                 }
  
@@ -50,6 +57,12 @@ namespace galaga {
                     win.Title = "Galaga | UPS: " + gameTimer.CapturedUpdates +
                     ", FPS: " + gameTimer.CapturedFrames; 
                 }
+            }
+        }
+        public void AddEnemies() {
+            for (int i = 0; i < 4; i++) {
+                enemies.Add(new Enemy(new DynamicShape(new Vec2F(0.1f, 0.1f), new Vec2F(0.1f, 0.1f)), 
+            enemyStrides[i]));
             }
         }
         public void KeyPress(string key) {
