@@ -18,5 +18,13 @@ namespace galaga {
         {
             throw new NotImplementedException();
         }
+        public void Direction(Vec2F vector) {
+            (Entity.Shape.AsDynamicShape()).ChangeDirection(vector);
+        }
+        public void Move() {
+            if ( Entity.Shape.Position.X != 0.0 && Entity.Shape.Position.X != 1.0 ) {
+                (Entity.Shape.AsDynamicShape()).Move();
+            }
+        }
     }
 }

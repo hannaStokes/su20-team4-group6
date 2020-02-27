@@ -6,17 +6,26 @@ using DIKUArcade.EventBus;
 using DIKUArcade.Graphics;
 using DIKUArcade.Math;
 using DIKUArcade.Entities;
+using System.Collections.Generic;
 
 namespace galaga {
     public class Game : IGameEventProcessor<object> {
+
+        private GameEventBus<object> eventBus;
         private Window win;
         private GameTimer gameTimer;
         private Player player;
         public Game() {
-        // TODO: Choose some reasonable values for the window and timer constructor. 
-        // For the window, we recommend a 500x500 resolution (a 1:1 aspect ratio). win = new Window(... , ... , ...);
-        gameTimer = new  GameTimer(60, 60);
+            eventBus = new GameEventBus<object>();
+                eventBus.InitializeEventBus(new List<GameEventType>() {
+                    GameEventType.InputEvent, // key press / key release
+                    GameEventType.WindowEvent, // messages to the window 
+                });
         win = new Window("Galaga" , 500 , 500);
+        win.RegisterEventBus(eventBus);
+        eventBus.Subscribe(GameEventType.InputEvent, this);
+        eventBus.Subscribe(GameEventType.WindowEvent, this);
+        gameTimer = new  GameTimer(60, 60);
         player = new Player(
             new DynamicShape(new Vec2F(0.45f, 0.1f), new Vec2F(0.1f, 0.1f)), 
             new Image(Path.Combine("Assets", "Images", "Player.png")));
@@ -26,6 +35,8 @@ namespace galaga {
                 gameTimer.MeasureTime();
                 while (gameTimer.ShouldUpdate()) {
                     win.PollEvents();
+                    eventBus.ProcessEvents();
+                    player.Move();
                     // Update game logic here
                 }
                 if (gameTimer.ShouldRender()) {
@@ -41,15 +52,46 @@ namespace galaga {
                 }
             }
         }
-    public void KeyPress(string key) {
-        throw new NotImplementedException();
-    }
-    public void KeyRelease(string key) {
-        throw new NotImplementedException();
-    }
+        public void KeyPress(string key) {
+            switch(key) {
+                case "KEY_ESCAPE":
+                    eventBus.RegisterEvent(
+                        GameEventFactory<object>.CreateGameEventForAllProcessors(
+                        GameEventType.WindowEvent, this, "CLOSE_WINDOW", "", ""));
+                    break;
+                case "KEY_RIGHT":
+                    player.Direction(new Vec2F((float)0.01, (float)0.0));
+                    break;
+                case "KEY_LEFT":
+                    player.Direction(new Vec2F((float)-0.01, (float)0.0));
+                    break;
+            }
+        }
+            
+        public void KeyRelease(string key) {
+            player.Direction(player.Entity.Shape.Position);
+        }
+
     public void ProcessEvent(GameEventType eventType,
         GameEvent<object> gameEvent) {
-        throw new NotImplementedException();
+        if (eventType == GameEventType.WindowEvent) {
+            switch (gameEvent.Message) {
+                case "CLOSE_WINDOW":
+                    win.CloseWindow();
+                    break;
+                default:
+                    break;
+            }
+        } else if (eventType == GameEventType.InputEvent) {
+            switch (gameEvent.Parameter1) {
+                case "KEY_PRESS":
+                    KeyPress(gameEvent.Message);
+                    break;
+                case "KEY_RELEASE":
+                    KeyRelease(gameEvent.Message);
+                    break;
+                }
+            }
         }
     }
 }
