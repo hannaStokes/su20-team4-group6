@@ -62,7 +62,7 @@ namespace galaga {
         public void AddEnemies() {
             for (int i = 0; i < 4; i++) {
                 enemies.Add(new Enemy(new DynamicShape(new Vec2F(0.1f, 0.1f), new Vec2F(0.1f, 0.1f)), 
-            enemyStrides[i]));
+            new ImageStride(80, enemyStrides)));
             }
         }
         public void KeyPress(string key) {
