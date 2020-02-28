@@ -1,10 +1,12 @@
 using System;
+using System.IO;
 using DIKUArcade;
 using DIKUArcade.Timers;
 using DIKUArcade.EventBus;
 using DIKUArcade.Graphics;
 using DIKUArcade.Math;
 using DIKUArcade.Entities;
+using System.Collections.Generic;
 
 namespace galaga {
 
@@ -29,9 +31,10 @@ namespace galaga {
                 dShape.Move();
             }
         }
-        public void AddShots() {
+        public void AddShots(Game game) {
             IBaseImage bulletPicture = new Image(Path.Combine("Assets", "Images", "BulletRed2.png"));
-            PlayerShot pShot = new PlayerShot(new DynamicShape(Entity.Shape.Position, new Vec2F(0.0f, 0.01f), new Vec2F(0.008f,0.027f)), bulletPicture);
+            PlayerShot pShot = new PlayerShot(new DynamicShape(Entity.Shape.Position , new Vec2F(0.008f,0.027f), new Vec2F(0.0f, 0.01f)), bulletPicture);
+            game.playerShots.Add(pShot);
         }
     }
  }
