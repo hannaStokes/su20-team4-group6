@@ -61,7 +61,7 @@ namespace galaga {
         }
         public void AddEnemies() {
             for (int i = 0; i < 4; i++) {
-                enemies.Add(new Enemy(new DynamicShape(new Vec2F(0.1f, 0.1f), new Vec2F(0.1f, 0.1f)), 
+                enemies.Add(new Enemy(new DynamicShape(new Vec2F(((i+1.0f)/4.0f)-0.175f, 0.8f), new Vec2F(0.1f, 0.1f)), 
             new ImageStride(80, enemyStrides)));
             }
         }
