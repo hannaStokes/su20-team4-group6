@@ -16,6 +16,9 @@ namespace galaga {
         private Window win;
         private GameTimer gameTimer;
         private List<Image> enemyStrides;
+        private List<Image> explosionStrides;
+        private AnimationContainer explosions;
+        private int explosionLength = 500;
         private List<Enemy> enemies;
         public List<PlayerShot> playerShots {get; set;}
         private Player player;
@@ -25,17 +28,21 @@ namespace galaga {
                     GameEventType.InputEvent, // key press / key release
                     GameEventType.WindowEvent, // messages to the window 
                 });
-        win = new Window("Galaga" , 500 , 500);
-        win.RegisterEventBus(eventBus);
-        eventBus.Subscribe(GameEventType.InputEvent, this);
-        eventBus.Subscribe(GameEventType.WindowEvent, this);
-        gameTimer = new  GameTimer(60, 60);
-        player = new Player(
-            new DynamicShape(new Vec2F(0.45f, 0.1f), new Vec2F(0.1f, 0.1f)), 
-            new Image(Path.Combine("Assets", "Images", "Player.png")));
-        enemyStrides = ImageStride.CreateStrides(4, Path.Combine("Assets", "Images", "BlueMonster.png"));
-        enemies = new List<Enemy>();
-        AddEnemies();
+            win = new Window("Galaga" , 500 , 500);
+            playerShots = new List<PlayerShot>();
+            win.RegisterEventBus(eventBus);
+            eventBus.Subscribe(GameEventType.InputEvent, this);
+            eventBus.Subscribe(GameEventType.WindowEvent, this);
+            gameTimer = new  GameTimer(60, 60);
+            player = new Player(
+                new DynamicShape(new Vec2F(0.45f, 0.1f), new Vec2F(0.1f, 0.1f)), 
+                new Image(Path.Combine("Assets", "Images", "Player.png")));
+            enemyStrides = ImageStride.CreateStrides(4, Path.Combine("Assets", "Images", "BlueMonster.png"));
+            enemies = new List<Enemy>();
+            AddEnemies();
+            explosionStrides = ImageStride.CreateStrides(8,
+            Path.Combine("Assets", "Images", "Explosion.png"));
+            explosions = new AnimationContainer(100);
         }
         public void GameLoop() {
             while(win.IsRunning()) {
@@ -85,6 +92,12 @@ namespace galaga {
                     }
                 }
             playerShots = newShots;
+        }
+
+        public void AddExplosion(float posX, float posY, float extentX, float extentY) {
+            explosions.AddAnimation(
+                new StationaryShape(posX, posY, extentX, extentY), explosionLength,
+                new ImageStride(explosionLength / 8, explosionStrides));
         }
         
         public void IterateShots() {
