@@ -62,6 +62,7 @@ namespace galaga {
                         element.RenderEntity();}
                     foreach (PlayerShot shot in playerShots) {
                         shot.RenderEntity();}
+                    explosions.RenderAnimations();
                     win.SwapBuffers();
                 }
  
