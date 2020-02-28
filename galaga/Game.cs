@@ -82,7 +82,14 @@ namespace galaga {
         }
             
         public void KeyRelease(string key) {
-            player.Direction(player.Entity.Shape.Position);
+            switch(key) {
+                case "KEY_RIGHT":
+                    player.Direction(new Vec2F((float)0.0, (float)0.0));;
+                    break;
+                case "KEY_LEFT":
+                    player.Direction(new Vec2F((float)0.0, (float)0.0));;
+                    break;
+            }
         }
 
     public void ProcessEvent(GameEventType eventType,
