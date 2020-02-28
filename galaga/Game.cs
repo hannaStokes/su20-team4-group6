@@ -22,6 +22,7 @@ namespace galaga {
         private List<Enemy> enemies;
         public List<PlayerShot> playerShots {get; set;}
         private Player player;
+        private Score score;
         public Game() {
             eventBus = new GameEventBus<object>();
                 eventBus.InitializeEventBus(new List<GameEventType>() {
@@ -43,6 +44,7 @@ namespace galaga {
             explosionStrides = ImageStride.CreateStrides(8,
                 Path.Combine("Assets", "Images", "Explosion.png"));
             explosions = new AnimationContainer(100);
+            score = new Score(new Vec2F(0.8f,0.8f),new Vec2F(0.2f,0.2f));
         }
         public void GameLoop() {
             while(win.IsRunning()) {
@@ -63,6 +65,7 @@ namespace galaga {
                     foreach (PlayerShot shot in playerShots) {
                         shot.RenderEntity();}
                     explosions.RenderAnimations();
+                    score.RenderScore();
                     win.SwapBuffers();
                 }
  
@@ -116,6 +119,7 @@ namespace galaga {
                             shot.DeleteEntity();
                             enemy.DeleteEntity();
                             AddExplosion(enemy.Shape.Position.X,enemy.Shape.Position.Y,enemy.Shape.Extent.X,enemy.Shape.Extent.Y);
+                            score.AddPoint();
                         }
                     }
                 }
