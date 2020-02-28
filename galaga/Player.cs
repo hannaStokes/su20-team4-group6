@@ -33,7 +33,7 @@ namespace galaga {
         }
         public void AddShots(Game game) {
             IBaseImage bulletPicture = new Image(Path.Combine("Assets", "Images", "BulletRed2.png"));
-            PlayerShot pShot = new PlayerShot(new DynamicShape(Entity.Shape.Position , new Vec2F(0.008f,0.027f), new Vec2F(0.0f, 0.01f)), bulletPicture);
+            PlayerShot pShot = new PlayerShot(new DynamicShape(new Vec2F(Entity.Shape.Position.X + 0.045f,Entity.Shape.Position.Y + 0.1f), new Vec2F(0.008f,0.027f), new Vec2F(0.0f, 0.01f)), bulletPicture);
             game.playerShots.Add(pShot);
         }
     }

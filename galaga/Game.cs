@@ -41,7 +41,7 @@ namespace galaga {
             enemies = new List<Enemy>();
             AddEnemies();
             explosionStrides = ImageStride.CreateStrides(8,
-            Path.Combine("Assets", "Images", "Explosion.png"));
+                Path.Combine("Assets", "Images", "Explosion.png"));
             explosions = new AnimationContainer(100);
         }
         public void GameLoop() {
@@ -53,12 +53,15 @@ namespace galaga {
                     player.Move();
                     UpdateEnemyList();
                     UpdateShotsList();
+                    IterateShots();
                 }
                 if (gameTimer.ShouldRender()) {
                     win.Clear();
                     player.Entity.RenderEntity();
                     foreach (Enemy element in enemies) {
                         element.RenderEntity();}
+                    foreach (PlayerShot shot in playerShots) {
+                        shot.RenderEntity();}
                     win.SwapBuffers();
                 }
  
@@ -107,10 +110,11 @@ namespace galaga {
                     shot.DeleteEntity(); } 
                 else {
                     foreach (var enemy in enemies) {
-                        if ((CollisionDetection.Aabb(enemy.Shape.AsDynamicShape(),shot.Shape)).Collision) 
+                        if ((CollisionDetection.Aabb(shot.Shape.AsDynamicShape(),enemy.Shape)).Collision) 
                         {
                             shot.DeleteEntity();
                             enemy.DeleteEntity();
+                            AddExplosion(enemy.Shape.Position.X,enemy.Shape.Position.Y,enemy.Shape.Extent.X,enemy.Shape.Extent.Y);
                         }
                     }
                 }
