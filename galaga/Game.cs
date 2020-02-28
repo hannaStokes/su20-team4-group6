@@ -17,7 +17,7 @@ namespace galaga {
         private GameTimer gameTimer;
         private List<Image> enemyStrides;
         private List<Enemy> enemies;
-        public List<PlayerShot> playerShots {get; private set;}
+        public List<PlayerShot> playerShots {get; set;}
         private Player player;
         public Game() {
             eventBus = new GameEventBus<object>();
@@ -46,7 +46,6 @@ namespace galaga {
                     player.Move();
                     UpdateEnemyList();
                     UpdateShotsList();
-                    // Update game logic here
                 }
                 if (gameTimer.ShouldRender()) {
                     win.Clear();
