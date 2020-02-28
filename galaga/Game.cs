@@ -7,6 +7,7 @@ using DIKUArcade.Graphics;
 using DIKUArcade.Math;
 using DIKUArcade.Entities;
 using System.Collections.Generic;
+using DIKUArcade.Physics;
 
 namespace galaga {
     public class Game : IGameEventProcessor<object> {
@@ -43,7 +44,8 @@ namespace galaga {
                     win.PollEvents();
                     eventBus.ProcessEvents();
                     player.Move();
-                    player.AddShots();
+                    UpdateEnemyList();
+                    UpdateShotsList();
                     // Update game logic here
                 }
                 if (gameTimer.ShouldRender()) {
@@ -67,6 +69,41 @@ namespace galaga {
             new ImageStride(80, enemyStrides)));
             }
         }
+        public void UpdateEnemyList(){
+            List<Enemy> newEnemies = new List<Enemy>();
+                foreach (Enemy enemy in enemies) {
+                    if (!enemy.IsDeleted()) { 
+                        newEnemies.Add(enemy);
+                    }
+                }
+            enemies = newEnemies;
+        }
+        public void UpdateShotsList(){
+            List<PlayerShot> newShots = new List<PlayerShot>();
+                foreach (PlayerShot shot in playerShots) {
+                    if (!shot.IsDeleted()) { 
+                        newShots.Add(shot);
+                    }
+                }
+            playerShots = newShots;
+        }
+        
+        public void IterateShots() {
+            foreach (var shot in playerShots) {
+                shot.Shape.Move();
+                if (shot.Shape.Position.Y > 1.0f) {
+                    shot.DeleteEntity(); } 
+                else {
+                    foreach (var enemy in enemies) {
+                        if ((CollisionDetection.Aabb(enemy.Shape.AsDynamicShape(),shot.Shape)).Collision) 
+                        {
+                            shot.DeleteEntity();
+                            enemy.DeleteEntity();
+                        }
+                    }
+                }
+            } 
+        }
         public void KeyPress(string key) {
             switch(key) {
                 case "KEY_ESCAPE":
@@ -79,6 +116,9 @@ namespace galaga {
                     break;
                 case "KEY_LEFT":
                     player.Direction(new Vec2F(-((float)0.01), (float)0.0));
+                    break;
+                case "KEY_SPACE":
+                    player.AddShots(this);
                     break;
             }
         }

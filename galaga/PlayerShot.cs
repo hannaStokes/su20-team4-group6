@@ -11,4 +11,5 @@ public class PlayerShot : Entity {
         shape.Direction = new Vec2F(0.0f , 0.01f);
     } 
 
-}
+
+} 
