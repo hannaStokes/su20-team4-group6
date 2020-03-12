@@ -7,8 +7,6 @@ using DIKUArcade.Math;
 using DIKUArcade.Entities;
 using System.Collections.Generic;
 using DIKUArcade.Physics;
-using galaga.MovementStrategy;
-using galaga.Squadron;
 
 namespace galaga {
     public class Game : IGameEventProcessor<object> {
@@ -22,7 +20,6 @@ namespace galaga {
         private List<Enemy> enemies;
         private Player player;
         private Score score;
-        private DiamondSquadron diamondSquadron;
 
         public List<PlayerShot> playerShots {get; set;}
         public GameEventBus<object> eventBus;
@@ -54,11 +51,7 @@ namespace galaga {
 
             score = new Score(new Vec2F(0.8f, 0.8f), new Vec2F(0.2f, 0.2f));
 
-            //AddEnemies();
-
-            diamondSquadron = new DiamondSquadron();
-
-            diamondSquadron.CreateEnemies(enemyStrides);
+            AddEnemies();
         }
         public void GameLoop() {
             while(win.IsRunning()) {
@@ -72,10 +65,6 @@ namespace galaga {
                     UpdateEnemyList();
                     UpdateShotsList();
                     IterateShots();
-
-                    ZigZagDown zigZagDown = new ZigZagDown();
-
-                    zigZagDown.MoveEnemies(diamondSquadron.Enemies);
                 }
 
                 if (gameTimer.ShouldRender()) {
@@ -85,8 +74,6 @@ namespace galaga {
                     foreach (Enemy enemy in enemies) {
                         enemy.RenderEntity();
                     }
-
-                    diamondSquadron.Enemies.RenderEntities();
 
                     foreach (PlayerShot shot in playerShots) {
                         shot.RenderEntity();
