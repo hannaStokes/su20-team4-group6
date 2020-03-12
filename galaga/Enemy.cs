@@ -2,8 +2,11 @@ using DIKUArcade.Graphics;
 using DIKUArcade.Entities;
 
 public class Enemy : Entity {
-    public Enemy(DynamicShape shape, IBaseImage image): base(shape, image) {
-        
-    } 
+    public float startPositionX {get; }
+    public float startPositionY {get; }
 
+    public Enemy(DynamicShape shape, IBaseImage image): base(shape, image) {
+        startPositionX = shape.Position.X;
+        startPositionY = shape.Position.Y;
+    } 
 }
