@@ -11,59 +11,75 @@ using DIKUArcade.Physics;
 
 namespace galaga {
     public class Game : IGameEventProcessor<object> {
+        private static int explosionLength = 500;
 
-        public GameEventBus<object> eventBus;
         private Window win;
         private GameTimer gameTimer;
         private List<Image> enemyStrides;
         private List<Image> explosionStrides;
         private AnimationContainer explosions;
-        private int explosionLength = 500;
         private List<Enemy> enemies;
-        public List<PlayerShot> playerShots {get; set;}
         private Player player;
         private Score score;
+
+        public List<PlayerShot> playerShots {get; set;}
+        public GameEventBus<object> eventBus;
+
         public Game() {
             eventBus = new GameEventBus<object>();
-                eventBus.InitializeEventBus(new List<GameEventType>() {
-                    GameEventType.InputEvent, // key press / key release
-                    GameEventType.WindowEvent, // messages to the window 
-                });
-            win = new Window("Galaga" , 500 , 500);
-            playerShots = new List<PlayerShot>();
+            eventBus.InitializeEventBus(new List<GameEventType>() {
+                GameEventType.InputEvent, // key press / key release
+                GameEventType.WindowEvent // messages to the window 
+            });
+            win = new Window("Galaga", 500, 500);
+
             player = new Player(
                 new DynamicShape(new Vec2F(0.45f, 0.1f), new Vec2F(0.1f, 0.1f)), 
-                new Image(Path.Combine("Assets", "Images", "Player.png")),this);
+                new Image(Path.Combine("Assets", "Images", "Player.png")), this);
+            playerShots = new List<PlayerShot>();
+
             win.RegisterEventBus(eventBus);
             eventBus.Subscribe(GameEventType.InputEvent, player);
             eventBus.Subscribe(GameEventType.WindowEvent, this);
-            gameTimer = new  GameTimer(60, 60);
+
+            gameTimer = new GameTimer(60, 60);
+
             enemyStrides = ImageStride.CreateStrides(4, Path.Combine("Assets", "Images", "BlueMonster.png"));
             enemies = new List<Enemy>();
-            AddEnemies();
-            explosionStrides = ImageStride.CreateStrides(8,
-                Path.Combine("Assets", "Images", "Explosion.png"));
+
+            explosionStrides = ImageStride.CreateStrides(8, Path.Combine("Assets", "Images", "Explosion.png"));
             explosions = new AnimationContainer(100);
-            score = new Score(new Vec2F(0.8f,0.8f),new Vec2F(0.2f,0.2f));
+
+            score = new Score(new Vec2F(0.8f, 0.8f), new Vec2F(0.2f, 0.2f));
+
+            AddEnemies();
         }
         public void GameLoop() {
             while(win.IsRunning()) {
                 gameTimer.MeasureTime();
+
                 while (gameTimer.ShouldUpdate()) {
                     win.PollEvents();
                     eventBus.ProcessEvents();
                     player.Move();
+
                     UpdateEnemyList();
                     UpdateShotsList();
                     IterateShots();
                 }
+
                 if (gameTimer.ShouldRender()) {
                     win.Clear();
                     player.Entity.RenderEntity();
-                    foreach (Enemy element in enemies) {
-                        element.RenderEntity();}
+                    
+                    foreach (Enemy enemy in enemies) {
+                        enemy.RenderEntity();
+                    }
+
                     foreach (PlayerShot shot in playerShots) {
-                        shot.RenderEntity();}
+                        shot.RenderEntity();
+                    }
+
                     explosions.RenderAnimations();
                     score.RenderScore();
                     win.SwapBuffers();
@@ -78,26 +94,31 @@ namespace galaga {
         }
         public void AddEnemies() {
             for (int i = 0; i < 4; i++) {
-                enemies.Add(new Enemy(new DynamicShape(new Vec2F(((i+1.0f)/4.0f)-0.175f, 0.8f), new Vec2F(0.1f, 0.1f)), 
-            new ImageStride(80, enemyStrides)));
+                enemies.Add(new Enemy(
+                    new DynamicShape(new Vec2F(((i + 1.0f) / 4.0f) - 0.175f, 0.8f), new Vec2F(0.1f, 0.1f)), 
+                    new ImageStride(80, enemyStrides)));
             }
         }
         public void UpdateEnemyList(){
             List<Enemy> newEnemies = new List<Enemy>();
-                foreach (Enemy enemy in enemies) {
-                    if (!enemy.IsDeleted()) { 
-                        newEnemies.Add(enemy);
-                    }
+
+            foreach (Enemy enemy in enemies) {
+                if (!enemy.IsDeleted()) { 
+                    newEnemies.Add(enemy);
                 }
+            }
+
             enemies = newEnemies;
         }
         public void UpdateShotsList(){
             List<PlayerShot> newShots = new List<PlayerShot>();
-                foreach (PlayerShot shot in playerShots) {
-                    if (!shot.IsDeleted()) { 
-                        newShots.Add(shot);
-                    }
+
+            foreach (PlayerShot shot in playerShots) {
+                if (!shot.IsDeleted()) { 
+                    newShots.Add(shot);
                 }
+            }
+
             playerShots = newShots;
         }
 
@@ -108,12 +129,13 @@ namespace galaga {
         }
         
         public void IterateShots() {
-            foreach (var shot in playerShots) {
+            foreach (PlayerShot shot in playerShots) {
                 shot.Shape.Move();
+
                 if (shot.Shape.Position.Y > 1.0f) {
-                    shot.DeleteEntity(); } 
-                else {
-                    foreach (var enemy in enemies) {
+                    shot.DeleteEntity();
+                } else {
+                    foreach (Enemy enemy in enemies) {
                         if ((CollisionDetection.Aabb(shot.Shape.AsDynamicShape(),enemy.Shape)).Collision) 
                         {
                             shot.DeleteEntity();

@@ -24,13 +24,13 @@ namespace galaga {
                 case "KEY_ESCAPE":
                     Game.eventBus.RegisterEvent(
                         GameEventFactory<object>.CreateGameEventForAllProcessors(
-                        GameEventType.WindowEvent, this, "CLOSE_WINDOW", "", ""));
+                            GameEventType.WindowEvent, this, "CLOSE_WINDOW", "", ""));
                     break;
                 case "KEY_RIGHT":
-                    Direction(new Vec2F((float)0.01, (float)0.0));
+                    Direction(new Vec2F(0.01f, 0.0f));
                     break;
                 case "KEY_LEFT":
-                    Direction(new Vec2F(-((float)0.01), (float)0.0));
+                    Direction(new Vec2F(-0.01f, 0.0f));
                     break;
                 case "KEY_SPACE":
                     AddShots(Game);
@@ -41,10 +41,8 @@ namespace galaga {
         private void KeyRelease(string key) {
             switch(key) {
                 case "KEY_RIGHT":
-                    Direction(new Vec2F((float)0.0, (float)0.0));;
-                    break;
                 case "KEY_LEFT":
-                    Direction(new Vec2F((float)0.0, (float)0.0));;
+                    Direction(new Vec2F(0.0f, 0.0f));;
                     break;
             }
         }
@@ -61,18 +59,23 @@ namespace galaga {
         }
 
         public void Direction(Vec2F vector) {
-            var dShape = Entity.Shape.AsDynamicShape();
+            DynamicShape dShape = Entity.Shape.AsDynamicShape();
             dShape.ChangeDirection(vector);
         }
+
         public void Move() {
-            var dShape = Entity.Shape.AsDynamicShape();
-            if ( (dShape.Position.X + dShape.Direction.X) > 0.0f && (dShape.Position.X + dShape.Direction.X) < 0.9f ) {
+            DynamicShape dShape = Entity.Shape.AsDynamicShape();
+            if ((dShape.Position.X + dShape.Direction.X) > 0.0f && (dShape.Position.X + dShape.Direction.X) < 0.9f ) {
                 dShape.Move();
             }
         }
         public void AddShots(Game game) {
             IBaseImage bulletPicture = new Image(Path.Combine("Assets", "Images", "BulletRed2.png"));
-            PlayerShot pShot = new PlayerShot(new DynamicShape(new Vec2F(Entity.Shape.Position.X + 0.045f,Entity.Shape.Position.Y + 0.1f), new Vec2F(0.008f,0.027f), new Vec2F(0.0f, 0.01f)), bulletPicture);
+
+            PlayerShot pShot = new PlayerShot(new DynamicShape(
+                new Vec2F(Entity.Shape.Position.X + 0.045f,Entity.Shape.Position.Y + 0.1f),
+                new Vec2F(0.008f,0.027f), new Vec2F(0.0f, 0.01f)), bulletPicture);
+
             game.playerShots.Add(pShot);
         }
     }

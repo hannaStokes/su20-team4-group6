@@ -1,13 +1,11 @@
-﻿using System;
-
-namespace galaga
+﻿namespace galaga
 {
     class Program
     {
         static void Main(string[] args)
         {
-            Game g = new Game();
-            g.GameLoop();
+            Game game = new Game();
+            game.GameLoop();
         }
     }
 }
