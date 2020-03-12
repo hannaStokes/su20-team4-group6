@@ -334,3 +334,7 @@ packages/OpenTK.3.0.0-pre/
 .gitmodules
 
 # End of https://www.gitignore.io/api/vim,emacs,latex
+
+# Custom additions
+.ionide/
+.vscode/
