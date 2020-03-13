@@ -27,6 +27,7 @@ namespace galaga {
         private Random random;
         private int movementSeed;
         private float speedMultiplier;
+        private bool gameOver;
 
         public List<PlayerShot> playerShots;
         public GameEventBus<object> eventBus;
@@ -35,7 +36,8 @@ namespace galaga {
             eventBus = new GameEventBus<object>();
             eventBus.InitializeEventBus(new List<GameEventType>() {
                 GameEventType.InputEvent, // key press / key release
-                GameEventType.WindowEvent // messages to the window 
+                GameEventType.WindowEvent, // messages to the window 
+                GameEventType.GameStateEvent // changes to the game state
             });
             win = new Window("Galaga", 500, 500);
 
@@ -47,6 +49,7 @@ namespace galaga {
             win.RegisterEventBus(eventBus);
             eventBus.Subscribe(GameEventType.InputEvent, player);
             eventBus.Subscribe(GameEventType.WindowEvent, this);
+            eventBus.Subscribe(GameEventType.GameStateEvent, this);
 
             gameTimer = new GameTimer(60, 60);
 
@@ -70,30 +73,37 @@ namespace galaga {
                 while (gameTimer.ShouldUpdate()) {
                     win.PollEvents();
                     eventBus.ProcessEvents();
-                    player.Move();
 
-                    EnemyMove();
+                    if (!gameOver) {
+                        player.Move();
 
-                    if (CheckEnemiesDefeated()) {
-                        AddSquadron();
+                        EnemyMove();
+
+                        if (CheckEnemiesDefeated()) {
+                            AddSquadron();
+                        }
+
+                        UpdateEnemyList();
+                        UpdateShotsList();
+                        IterateShots();
                     }
-
-                    UpdateEnemyList();
-                    UpdateShotsList();
-                    IterateShots();
                 }
 
                 if (gameTimer.ShouldRender()) {
                     win.Clear();
-                    player.Entity.RenderEntity();
-                    
-                    enemies.RenderEntities();
 
-                    foreach (PlayerShot shot in playerShots) {
-                        shot.RenderEntity();
+                    if (!gameOver) {
+                        player.Entity.RenderEntity();
+                        
+                        enemies.RenderEntities();
+
+                        foreach (PlayerShot shot in playerShots) {
+                            shot.RenderEntity();
+                        }
+
+                        explosions.RenderAnimations();
                     }
 
-                    explosions.RenderAnimations();
                     score.RenderScore();
                     win.SwapBuffers();
                 }
@@ -159,11 +169,11 @@ namespace galaga {
         private void EnemyMove() {
             switch (movementSeed) {
                 case 1:
-                    ZigZagDown zigZagDown = new ZigZagDown(speedMultiplier);
+                    ZigZagDown zigZagDown = new ZigZagDown(this, speedMultiplier);
                     zigZagDown.MoveEnemies(enemies);
                     break;
                 case 2:
-                    Down down = new Down(speedMultiplier);
+                    Down down = new Down(this, speedMultiplier);
                     down.MoveEnemies(enemies);
                     break;
                 case 3:
@@ -203,6 +213,9 @@ namespace galaga {
             switch (gameEvent.Message) {
                 case "CLOSE_WINDOW":
                     win.CloseWindow();
+                    break;
+                case "GAME_OVER":
+                    gameOver = true;
                     break;
                 default:
                     break;

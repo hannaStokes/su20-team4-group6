@@ -1,9 +1,11 @@
 using DIKUArcade.Entities;
+using DIKUArcade.EventBus;
 using DIKUArcade.Math;
 
 namespace galaga.MovementStrategy {
     public class Down : IMovementStrategy {
         private float speedMultiplier;
+        Game game;
 
         public void MoveEnemy(Enemy enemy) {
             DynamicShape dynamicShape = enemy.Shape.AsDynamicShape();
@@ -13,7 +15,9 @@ namespace galaga.MovementStrategy {
             if ((dynamicShape.Position.Y + dynamicShape.Direction.Y) > 0.0f) {
                 dynamicShape.Move();
             } else {
-                enemy.DeleteEntity();
+                game.eventBus.RegisterEvent(
+                        GameEventFactory<object>.CreateGameEventForAllProcessors(
+                            GameEventType.GameStateEvent, this, "GAME_OVER", "", ""));
             }
         }
 
@@ -23,8 +27,9 @@ namespace galaga.MovementStrategy {
             }
         }
 
-        public Down(float speedMultiplier) {
+        public Down(Game game, float speedMultiplier) {
             this.speedMultiplier = speedMultiplier;
+            this.game = game;
         }
     }
 }

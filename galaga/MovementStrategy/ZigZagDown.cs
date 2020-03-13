@@ -1,4 +1,5 @@
 using DIKUArcade.Entities;
+using DIKUArcade.EventBus;
 using DIKUArcade.Math;
 using System;
 
@@ -10,6 +11,8 @@ namespace galaga.MovementStrategy {
 
         private float speedMultiplier;
 
+        Game game;
+
         public void MoveEnemy(Enemy enemy) {
             DynamicShape dynamicShape = enemy.Shape.AsDynamicShape();
 
@@ -20,7 +23,9 @@ namespace galaga.MovementStrategy {
             if (y > 0.0f) {
                 dynamicShape.SetPosition(new Vec2F(x, y));
             } else {
-                enemy.DeleteEntity();
+                game.eventBus.RegisterEvent(
+                        GameEventFactory<object>.CreateGameEventForAllProcessors(
+                            GameEventType.GameStateEvent, this, "GAME_OVER", "", ""));
             }
         }
 
@@ -30,8 +35,9 @@ namespace galaga.MovementStrategy {
             }
         }
 
-        public ZigZagDown(float speedMultiplier) {
+        public ZigZagDown(Game game, float speedMultiplier) {
             this.speedMultiplier = speedMultiplier;
+            this.game = game;
         }
     }
 }
