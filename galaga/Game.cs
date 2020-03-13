@@ -7,21 +7,28 @@ using DIKUArcade.Math;
 using DIKUArcade.Entities;
 using System.Collections.Generic;
 using DIKUArcade.Physics;
+using galaga.Squadron;
+using galaga.MovementStrategy;
+using System;
 
 namespace galaga {
     public class Game : IGameEventProcessor<object> {
         private static int explosionLength = 500;
+        private static float speedUp = 0.05f;
 
         private Window win;
         private GameTimer gameTimer;
         private List<Image> enemyStrides;
         private List<Image> explosionStrides;
         private AnimationContainer explosions;
-        private List<Enemy> enemies;
+        private EntityContainer<Enemy> enemies;
         private Player player;
         private Score score;
+        private Random random;
+        private int movementSeed;
+        private float speedMultiplier;
 
-        public List<PlayerShot> playerShots {get; set;}
+        public List<PlayerShot> playerShots;
         public GameEventBus<object> eventBus;
 
         public Game() {
@@ -44,15 +51,18 @@ namespace galaga {
             gameTimer = new GameTimer(60, 60);
 
             enemyStrides = ImageStride.CreateStrides(4, Path.Combine("Assets", "Images", "BlueMonster.png"));
-            enemies = new List<Enemy>();
+            enemies = new EntityContainer<Enemy>();
 
             explosionStrides = ImageStride.CreateStrides(8, Path.Combine("Assets", "Images", "Explosion.png"));
             explosions = new AnimationContainer(100);
 
             score = new Score(new Vec2F(0.8f, 0.8f), new Vec2F(0.2f, 0.2f));
 
-            AddEnemies();
+            speedMultiplier = 1;
+
+            random = new Random();
         }
+
         public void GameLoop() {
             while(win.IsRunning()) {
                 gameTimer.MeasureTime();
@@ -61,6 +71,12 @@ namespace galaga {
                     win.PollEvents();
                     eventBus.ProcessEvents();
                     player.Move();
+
+                    EnemyMove();
+
+                    if (CheckEnemiesDefeated()) {
+                        AddSquadron();
+                    }
 
                     UpdateEnemyList();
                     UpdateShotsList();
@@ -71,9 +87,7 @@ namespace galaga {
                     win.Clear();
                     player.Entity.RenderEntity();
                     
-                    foreach (Enemy enemy in enemies) {
-                        enemy.RenderEntity();
-                    }
+                    enemies.RenderEntities();
 
                     foreach (PlayerShot shot in playerShots) {
                         shot.RenderEntity();
@@ -91,24 +105,19 @@ namespace galaga {
                 }
             }
         }
-        public void AddEnemies() {
-            for (int i = 0; i < 4; i++) {
-                enemies.Add(new Enemy(
-                    new DynamicShape(new Vec2F(((i + 1.0f) / 4.0f) - 0.175f, 0.8f), new Vec2F(0.1f, 0.1f)), 
-                    new ImageStride(80, enemyStrides)));
-            }
-        }
+
         public void UpdateEnemyList(){
-            List<Enemy> newEnemies = new List<Enemy>();
+            EntityContainer<Enemy> newEnemies = new EntityContainer<Enemy>();
 
             foreach (Enemy enemy in enemies) {
                 if (!enemy.IsDeleted()) { 
-                    newEnemies.Add(enemy);
+                    newEnemies.AddDynamicEntity(enemy);
                 }
             }
 
             enemies = newEnemies;
         }
+
         public void UpdateShotsList(){
             List<PlayerShot> newShots = new List<PlayerShot>();
 
@@ -146,18 +155,58 @@ namespace galaga {
                 }
             } 
         }
+
+        private void EnemyMove() {
+            switch (movementSeed) {
+                case 1:
+                    ZigZagDown zigZagDown = new ZigZagDown(speedMultiplier);
+                    zigZagDown.MoveEnemies(enemies);
+                    break;
+                case 2:
+                    Down down = new Down(speedMultiplier);
+                    down.MoveEnemies(enemies);
+                    break;
+                case 3:
+                    break;
+            }
+        }
+
+        private bool CheckEnemiesDefeated() {
+            return enemies.CountEntities() == 0;
+        }
+
+        private void AddSquadron() {
+            movementSeed = random.Next(1, 4);
+
+            speedMultiplier += speedUp;
+
+            switch (movementSeed) {
+                case 1:
+                    DiamondSquadron diamondSquadron = new DiamondSquadron();
+                    diamondSquadron.CreateEnemies(enemyStrides);
+                    enemies = diamondSquadron.Enemies;
+                    break;
+                case 2:
+                    LineSquadron lineSquadron = new LineSquadron();
+                    lineSquadron.CreateEnemies(enemyStrides);
+                    enemies = lineSquadron.Enemies;
+                    break;
+                case 3:
+                    SquareSquadron squareSquadron = new SquareSquadron();
+                    squareSquadron.CreateEnemies(enemyStrides);
+                    enemies = squareSquadron.Enemies;
+                    break;
+            }
+        }
         
-    public void ProcessEvent(GameEventType eventType, GameEvent<object> gameEvent) {
-        switch (gameEvent.Message) {
-            case "CLOSE_WINDOW":
-                win.CloseWindow();
-                break;
-            default:
-                break;
+        public void ProcessEvent(GameEventType eventType, GameEvent<object> gameEvent) {
+            switch (gameEvent.Message) {
+                case "CLOSE_WINDOW":
+                    win.CloseWindow();
+                    break;
+                default:
+                    break;
             }
         }
     }
 }
-
-
-

@@ -2,11 +2,13 @@ using DIKUArcade.Entities;
 using DIKUArcade.Math;
 
 namespace galaga.MovementStrategy {
-    public class Down {
+    public class Down : IMovementStrategy {
+        private float speedMultiplier;
+
         public void MoveEnemy(Enemy enemy) {
             DynamicShape dynamicShape = enemy.Shape.AsDynamicShape();
 
-            dynamicShape.ChangeDirection(new Vec2F(0.0f, -0.001f));
+            dynamicShape.ChangeDirection(new Vec2F(0.0f, -0.001f * speedMultiplier));
 
             if ((dynamicShape.Position.Y + dynamicShape.Direction.Y) > 0.0f) {
                 dynamicShape.Move();
@@ -21,7 +23,8 @@ namespace galaga.MovementStrategy {
             }
         }
 
-        public Down() {
+        public Down(float speedMultiplier) {
+            this.speedMultiplier = speedMultiplier;
         }
     }
 }
