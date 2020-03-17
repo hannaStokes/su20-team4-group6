@@ -33,7 +33,7 @@ namespace galaga {
         public GameEventBus<object> eventBus;
 
         public Game() {
-            eventBus = new GameEventBus<object>();
+            eventBus = GalagaBus.GetBus();
             eventBus.InitializeEventBus(new List<GameEventType>() {
                 GameEventType.InputEvent, // key press / key release
                 GameEventType.WindowEvent, // messages to the window 
