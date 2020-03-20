@@ -14,17 +14,19 @@ namespace galaga.GalagaStates {
             ActiveState.activeMenuButton = 
             switch(keyAct) {
                 case "KEY_UP":
-                    ActiveState.activeMenuButton =
+                    if (ActiveState.activeMenuButton == 0){ActiveState.activeMenuButton = 1;}
+                    else (ActiveState.activeMenuButton = 0);
                     break;
                 case "KEY_DOWN":
-                    ActiveState.activeMenuButton =
+                    if (ActiveState.activeMenuButton == 0){ActiveState.activeMenuButton = 1;}
+                    else (ActiveState.activeMenuButton = 0);
                     break;
                 case "KEY_ENTER":
                     GameEventFactory<object>.CreateGameEventForAllProcessors(
                                  GameEventType.GameStateEvent,
                                  this,
                                  "CHANGE_STATE",
-                                 "GAME_RUNNING", "")
+                                 "GAME_RUNNING", "");
                     break;
             }
         }
