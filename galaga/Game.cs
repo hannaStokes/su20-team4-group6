@@ -31,9 +31,11 @@ namespace galaga {
 
         public List<PlayerShot> playerShots;
         public GameEventBus<object> eventBus;
+        public StateMachine stateMachine;
 
         public Game() {
             eventBus = GalagaBus.GetBus();
+            stateMachine = new StateMachine();
             eventBus.InitializeEventBus(new List<GameEventType>() {
                 GameEventType.InputEvent, // key press / key release
                 GameEventType.WindowEvent, // messages to the window 

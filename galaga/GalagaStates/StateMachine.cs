@@ -7,31 +7,57 @@ namespace galaga.GalagaStates {
         public StateMachine() {
             GalagaBus.GetBus().Subscribe(GameEventType.GameStateEvent, this);
             GalagaBus.GetBus().Subscribe(GameEventType.InputEvent, this);
-            ActiveState = GameStateType.MainMenu.GetInstance();
+            ActiveState = MainMenu.GetInstance();
         }
 
-        void HandleKeyEvent(string keyValue, string keyAction) {
-            
+        public void HandleKeyEvent(string keyVal, string keyAct) {
+            ActiveState.activeMenuButton = 
+            switch(keyAct) {
+                case "KEY_UP":
+                    ActiveState.activeMenuButton =
+                    break;
+                case "KEY_DOWN":
+                    ActiveState.activeMenuButton =
+                    break;
+                case "KEY_ENTER":
+                    GameEventFactory<object>.CreateGameEventForAllProcessors(
+                                 GameEventType.GameStateEvent,
+                                 this,
+                                 "CHANGE_STATE",
+                                 "GAME_RUNNING", "")
+                    break;
+            }
         }
-        private void SwitchState(GameStateType stateType) {
-            ActiveState = GameEventType.GameStateEvent;
-            switch (stateType) {
-                case GameStateType.MainMenu :
-
-                    IGameState.HandleKeyEvent("KEY_M", "MAIN_MENU");
+        
+        private void KeyPress(string key) {
+            switch(key) {
+                case "KEY_M":
                     event = GameEventFactory<object>.CreateGameEventForAllProcessors(GameEventType.GameStateEvent, this, "MAIN_MENU", "", "");
                     GalagaBus.GetBus().RegisterEvent(event);
-                    TransformStringToState(event.Message);
                     break;
-                case GameStateType.GameRunning :
+                case "KEY_R":
                     event = GameEventFactory<object>.CreateGameEventForAllProcessors(GameEventType.GameStateEvent, this, "GAME_RUNNING", "", "");
                     GalagaBus.GetBus().RegisterEvent(event);
-                    TransformStringToState(event.Message);
                     break;
-                case GameStateType.GamePaused :
+                case "KEY_P":
                     event = GameEventFactory<object>.CreateGameEventForAllProcessors(GameEventType.GameStateEvent, this, "GAME_PAUSED", "", "");
                     GalagaBus.GetBus().RegisterEvent(event);
-                    TransformStringToState(event.Message);
+                    break;
+            }
+        }
+        private void SwitchState(GameStateType stateType) {
+            switch (stateType) {
+                case GameStateType.MainMenu :
+                    ActiveState = MainMenu.GetInstance();
+                    KeyPress("KEY_M");
+                    break;
+                case GameStateType.GameRunning :
+                    ActiveState = GameRunning.GetInstance();
+                    KeyPress("KEY_R");
+                    break;
+                case GameStateType.GamePaused :
+                    ActiveState = GamePaused.GetInstance();
+                    KeyPress("KEY_P");
                     break;
             }
         }
