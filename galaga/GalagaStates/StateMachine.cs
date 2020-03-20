@@ -22,11 +22,19 @@ namespace galaga.GalagaStates {
                     else (ActiveState.activeMenuButton = 0);
                     break;
                 case "KEY_ENTER":
-                    GameEventFactory<object>.CreateGameEventForAllProcessors(
-                                 GameEventType.GameStateEvent,
-                                 this,
-                                 "CHANGE_STATE",
-                                 "GAME_RUNNING", "");
+                    if (ActiveState.activeMenuButton == 0){GalagaBus.GetBus().RegisterEvent(
+                                GameEventFactory<object>.CreateGameEventForAllProcessors(
+                                GameEventType.GameStateEvent,
+                                this,
+                                "CHANGE_STATE",
+                                "GAME_RUNNING", ""));}
+                    else { GalagaBus.GetBus().RegisterEvent(
+                            GameEventFactory<object>.CreateGameEventForAllProcessors(
+                            GameEventType.WindowEvent,
+                            this, 
+                            "CLOSE_WINDOW",
+                            "",
+                            ""));}
                     break;
             }
         }
