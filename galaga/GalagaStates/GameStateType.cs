@@ -1,7 +1,7 @@
 using DIKUArcade;
 
 
-namespace galaga {
+namespace galaga.GalagaStates {
     public enum GameStateType {
             
         GameRunning,
@@ -13,6 +13,7 @@ namespace galaga {
     
     public class StateTransformer {
 
+        //default is to keep the game running for robustness
         public static GameStateType TransformStringToState(string state) {
             GameStateType gameState = GameStateType.GameRunning;
             switch (state) {
@@ -31,6 +32,8 @@ namespace galaga {
             return gameState;
         }
 
+
+        //default is to keep the game running for robustness
         public static string TransformStateToString(GameStateType state) {
             string gameState = "GAME_RUNNING";
             switch (state) {
