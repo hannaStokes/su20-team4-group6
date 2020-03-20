@@ -11,7 +11,6 @@ namespace galaga.GalagaStates {
         }
 
         public void HandleKeyEvent(string keyVal, string keyAct) {
-            ActiveState.activeMenuButton = 
             switch(keyAct) {
                 case "KEY_UP":
                     if (ActiveState.activeMenuButton == 0){ActiveState.activeMenuButton = 1;}
@@ -53,6 +52,7 @@ namespace galaga.GalagaStates {
                     event = GameEventFactory<object>.CreateGameEventForAllProcessors(GameEventType.GameStateEvent, this, "GAME_PAUSED", "", "");
                     GalagaBus.GetBus().RegisterEvent(event);
                     break;
+                
             }
         }
         private void SwitchState(GameStateType stateType) {

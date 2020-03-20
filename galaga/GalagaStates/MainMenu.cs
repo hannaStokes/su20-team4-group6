@@ -12,10 +12,22 @@ namespace galaga.GalagaStates {
         public void RenderState()
         {
             backGroundImage.RenderEntity();
-            foreach (Text menubottom in menuButtons)
+            if (activeMenuButton == 0)
             {
-                menubottom.RenderText();
+                menuBottoms[0].SetColor(0,128,0);
+                menuBottoms[0].RenderText();
+                menuBottoms[1].SetColor(255,0,0);
+                menuBottoms[1].RenderText();
             }
+            else 
+            {
+                menuBottoms[0] = red;
+                menuBottoms[0].RenderText();
+                menuBottoms[1] = green;
+                menuBottoms[1].RenderText();
+            }
+                
+            
         }
     }
 }

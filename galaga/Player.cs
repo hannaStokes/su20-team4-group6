@@ -8,8 +8,8 @@ namespace galaga {
     public class Player : IGameEventProcessor<object> {
         public Entity Entity {get; private set;}
 
-        Game Game;
-        public Player(DynamicShape shape, IBaseImage image, Game game) {
+        GameRunning Game;
+        public Player(DynamicShape shape, IBaseImage image, GameRunning game) {
             Entity = new Entity(shape, image);
             Game = game;
         }
