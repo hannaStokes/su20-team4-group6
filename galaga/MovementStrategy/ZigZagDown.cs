@@ -2,6 +2,7 @@ using DIKUArcade.Entities;
 using DIKUArcade.EventBus;
 using DIKUArcade.Math;
 using System;
+using galaga.GalagaStates;
 
 namespace galaga.MovementStrategy {
     public class ZigZagDown : IMovementStrategy {
@@ -11,7 +12,7 @@ namespace galaga.MovementStrategy {
 
         private float speedMultiplier;
 
-        Game game;
+        GameRunning game;
 
         public void MoveEnemy(Enemy enemy) {
             DynamicShape dynamicShape = enemy.Shape.AsDynamicShape();
@@ -23,7 +24,7 @@ namespace galaga.MovementStrategy {
             if (y > 0.0f) {
                 dynamicShape.SetPosition(new Vec2F(x, y));
             } else {
-                game.eventBus.RegisterEvent(
+                GalagaBus.GetBus().RegisterEvent(
                         GameEventFactory<object>.CreateGameEventForAllProcessors(
                             GameEventType.GameStateEvent, this, "GAME_OVER", "", ""));
             }
@@ -35,7 +36,7 @@ namespace galaga.MovementStrategy {
             }
         }
 
-        public ZigZagDown(Game game, float speedMultiplier) {
+        public ZigZagDown(GameRunning game, float speedMultiplier) {
             this.speedMultiplier = speedMultiplier;
             this.game = game;
         }

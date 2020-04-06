@@ -3,13 +3,14 @@ using DIKUArcade.EventBus;
 using DIKUArcade.Graphics;
 using DIKUArcade.Math;
 using DIKUArcade.Entities;
+using galaga.GalagaStates;
 
 namespace galaga {
     public class Player : IGameEventProcessor<object> {
         public Entity Entity {get; private set;}
 
-        Game Game;
-        public Player(DynamicShape shape, IBaseImage image, Game game) {
+        GameRunning Game;
+        public Player(DynamicShape shape, IBaseImage image, GameRunning game) {
             Entity = new Entity(shape, image);
             Game = game;
         }
@@ -17,7 +18,7 @@ namespace galaga {
         private void KeyPress(string key) {
             switch(key) {
                 case "KEY_ESCAPE":
-                    Game.eventBus.RegisterEvent(
+                    GalagaBus.GetBus().RegisterEvent(
                         GameEventFactory<object>.CreateGameEventForAllProcessors(
                             GameEventType.WindowEvent, this, "CLOSE_WINDOW", "", ""));
                     break;
@@ -64,7 +65,7 @@ namespace galaga {
                 dShape.Move();
             }
         }
-        public void AddShots(Game game) {
+        public void AddShots(GameRunning game) {
             IBaseImage bulletPicture = new Image(Path.Combine("Assets", "Images", "BulletRed2.png"));
 
             PlayerShot pShot = new PlayerShot(new DynamicShape(

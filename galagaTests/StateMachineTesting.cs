@@ -1,4 +1,5 @@
 using DIKUArcade.EventBus;
+using DIKUArcade;
 using galaga.GalagaStates;
 using galaga;
 using System.Collections.Generic;
@@ -8,6 +9,7 @@ namespace galagaTests {
     [TestFixture]
     public class StateMachineTesting {
         private StateMachine stateMachine;
+        private Window win;
         
         public GameEventBus<object> eventBus;
 
@@ -15,14 +17,14 @@ namespace galagaTests {
         public void InitiateStateMachine() {
             DIKUArcade.Window.CreateOpenGLContext();
 
-            eventBus = GalagaBus.GetBus();
-            eventBus.InitializeEventBus(new List<GameEventType>() {
-                GameEventType.GameStateEvent // changes to the game state
+            GalagaBus.GetBus().InitializeEventBus(new List<GameEventType>() {
+                GameEventType.GameStateEvent, // changes to the game state
+                GameEventType.InputEvent
             });
     
             stateMachine = new StateMachine();
 
-            eventBus.Subscribe(GameEventType.GameStateEvent, stateMachine);
+            GalagaBus.GetBus().Subscribe(GameEventType.GameStateEvent, stateMachine);
         }
 
         [Test]
@@ -42,6 +44,34 @@ namespace galagaTests {
             GalagaBus.GetBus().ProcessEventsSequentially();
 
             Assert.That(stateMachine.ActiveState, Is.InstanceOf<GamePaused>());
+        }
+
+        [Test]
+        public void TestEventGameRunning() {
+            GalagaBus.GetBus().RegisterEvent(
+                GameEventFactory<object>.CreateGameEventForAllProcessors(
+                    GameEventType.GameStateEvent,
+                    this,
+                    "CHANGE_STATE",
+                    "GAME_RUNNING", ""));
+
+            GalagaBus.GetBus().ProcessEventsSequentially();
+
+            Assert.That(stateMachine.ActiveState, Is.InstanceOf<GameRunning>());
+        }
+
+        [Test]
+        public void TestEventGMainMenu() {
+            GalagaBus.GetBus().RegisterEvent(
+                GameEventFactory<object>.CreateGameEventForAllProcessors(
+                    GameEventType.GameStateEvent,
+                    this,
+                    "CHANGE_STATE",
+                    "GAME_MAIN", ""));
+
+            GalagaBus.GetBus().ProcessEventsSequentially();
+
+            Assert.That(stateMachine.ActiveState, Is.InstanceOf<MainMenu>());
         }
     }
 }
