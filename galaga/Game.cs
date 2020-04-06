@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using DIKUArcade.Physics;
 using galaga.Squadron;
 using galaga.MovementStrategy;
+using galaga.GalagaStates;
 using System;
 
 namespace galaga {
@@ -25,6 +26,7 @@ namespace galaga {
         private Player player;
         private Score score;
         private Random random;
+        private StateMachine stateMachine;
         private int movementSeed;
         private float speedMultiplier;
         private bool gameOver;
@@ -64,6 +66,8 @@ namespace galaga {
             speedMultiplier = 1;
 
             random = new Random();
+
+            stateMachine = new StateMachine();
         }
 
         public void GameLoop() {
